@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contattami - Faw's Website</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Faw's Website</h1>
+            <div class="tagline">Programmatore & Creativo</div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" data-i18n="nav-home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav-about">Chi Sono</a></li>
+                <li><a href="#contact-section" class="active" data-i18n="nav-contact">Contattami</a></li>
+                <li><a href="login.html" data-i18n="nav-login">Login</a></li>
+                <li><a href="register.html" data-i18n="nav-register">Registrati</a></li>
+                <li class="language-switch">
+                    <button id="it-btn" class="active">IT</button>
+                    <button id="en-btn">EN</button>
+                </li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <main>
+        <!-- Contact Section -->
+        <section id="contact-section" class="section">
+            <div class="container">
+                <h2 class="section-title" data-i18n="contact-title">Contattami</h2>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <div class="contact-card">
+                            <i class="fas fa-envelope"></i>
+                            <h3 data-i18n="contact-email">Email</h3>
+                            <p><a href="mailto:faw.wkm@gmail.com">faw.wkm@gmail.com</a></p>
+                        </div>
+                        <div class="contact-card">
+                            <i class="fab fa-discord"></i>
+                            <h3>Discord</h3>
+                            <p>____faw</p>
+                        </div>
+                        <div class="contact-card">
+                            <i class="fab fa-instagram"></i>
+                            <h3>Instagram</h3>
+                            <p><a href="https://instagram.com/xfaw__">xfaw__</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-form" id="contact-form-container">
+                        <!-- Contenuto del form che verrà mostrato solo agli utenti loggati -->
+                        <div id="login-required-message" class="login-required">
+                            <h3 data-i18n="contact-login-required-title">Accesso richiesto</h3>
+                            <p data-i18n="contact-login-required-text">Per inviare un messaggio devi prima accedere o registrarti al sito.</p>
+                            <div class="login-required-buttons">
+                                <a href="login.html" class="btn primary" data-i18n="contact-login-btn">Accedi</a>
+                                <a href="register.html" class="btn secondary" data-i18n="contact-register-btn">Registrati</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Form visibile solo agli utenti loggati -->
+                        <div id="contact-form-logged-in" style="display: none;">
+                            <h3 data-i18n="contact-form-title">Inviami un messaggio</h3>
+                            <p data-i18n="contact-form-description">Compila il form sottostante per inviarmi un messaggio. Risponderò il prima possibile!</p>
+                            <form id="contact-form">
+                                <div class="form-group">
+                                    <label for="name" data-i18n="contact-form-name">Nome</label>
+                                    <input type="text" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" data-i18n="contact-form-email">Email</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subject" data-i18n="contact-form-subject">Oggetto</label>
+                                    <input type="text" id="subject" name="subject" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message" data-i18n="contact-form-message">Messaggio</label>
+                                    <textarea id="message" name="message" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn primary" data-i18n="contact-form-submit">Invia Messaggio</button>
+                            </form>
+                            <div id="form-status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nessuna sezione admin qui -->
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Faw's Website</h3>
+                    <p data-i18n="footer-tagline">Programmazione, creatività e passione</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer-navigation">Navigazione</h4>
+                    <ul>
+                        <li><a href="index.html" data-i18n="nav-home">Home</a></li>
+                        <li><a href="index.html#about" data-i18n="nav-about">Chi Sono</a></li>
+                        <li><a href="#contact-section" data-i18n="nav-contact">Contattami</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4 data-i18n="footer-social">Social</h4>
+                    <div class="social-icons">
+                        <a href="mailto:faw.wkm@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                        <a href="https://discord.com/users/____faw" title="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="https://instagram.com/xfaw__" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <!-- Rimosso link admin dal footer -->
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Faw's Website. <span data-i18n="footer-rights">Tutti i diritti riservati.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-panel" class="modal">
+        <div class="modal-content admin-panel-content">
+            <span class="close">&times;</span>
+            <h2 data-i18n="admin-panel-title">Pannello di Amministrazione</h2>
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="users" data-i18n="admin-tab-users">Utenti Registrati</button>
+                <button class="tab-btn" data-tab="messages" data-i18n="admin-tab-messages">Messaggi Ricevuti</button>
+            </div>
+            <div class="tab-content">
+                <div id="users-tab" class="tab-pane active">
+                    <h3 data-i18n="admin-users-title">Elenco Utenti</h3>
+                    <div class="data-table-container">
+                        <table id="users-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="admin-users-name">Nome</th>
+                                    <th data-i18n="admin-users-surname">Cognome</th>
+                                    <th data-i18n="admin-users-email">Email</th>
+                                    <th data-i18n="admin-users-phone">Telefono</th>
+                                    <th data-i18n="admin-users-date">Data Registrazione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- I dati degli utenti verranno caricati dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="messages-tab" class="tab-pane">
+                    <h3 data-i18n="admin-messages-title">Messaggi Ricevuti</h3>
+                    <div class="data-table-container">
+                        <table id="messages-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="admin-messages-name">Nome</th>
+                                    <th data-i18n="admin-messages-email">Email</th>
+                                    <th data-i18n="admin-messages-subject">Oggetto</th>
+                                    <th data-i18n="admin-messages-message">Messaggio</th>
+                                    <th data-i18n="admin-messages-date">Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- I messaggi verranno caricati dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

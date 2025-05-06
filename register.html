@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrati - Faw's Website</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Faw's Website</h1>
+            <div class="tagline">Programmatore & Creativo</div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" data-i18n="nav-home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav-about">Chi Sono</a></li>
+                <li><a href="contact.html" data-i18n="nav-contact">Contattami</a></li>
+                <li><a href="login.html" data-i18n="nav-login">Login</a></li>
+                <li><a href="register.html" class="active" data-i18n="nav-register">Registrati</a></li>
+                <li class="language-switch">
+                    <button id="it-btn" class="active">IT</button>
+                    <button id="en-btn">EN</button>
+                </li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <main>
+        <!-- Register Section -->
+        <section id="register-section" class="section">
+            <div class="container">
+                <h2 class="section-title" data-i18n="register-title">Registrati</h2>
+                <div class="auth-container">
+                    <div class="auth-info">
+                        <h3 data-i18n="register-welcome-title">Benvenuto nella community!</h3>
+                        <p data-i18n="register-welcome-text">Unisciti a noi per accedere a contenuti esclusivi e rimanere aggiornato sui miei progetti. La registrazione è semplice e veloce!</p>
+                        <div class="register-benefits">
+                            <h4 data-i18n="register-benefits-title">Perché registrarsi?</h4>
+                            <ul class="benefits-list">
+                                <li><i class="fas fa-check"></i> <span data-i18n="register-benefit-1">Accesso completo al form di contatto</span></li>
+                                <li><i class="fas fa-check"></i> <span data-i18n="register-benefit-2">Contenuti esclusivi e aggiornamenti</span></li>
+                                <li><i class="fas fa-check"></i> <span data-i18n="register-benefit-3">Supporto prioritario</span></li>
+                            </ul>
+                        </div>
+                        <div class="register-image">
+                            <i class="fas fa-users register-icon"></i>
+                        </div>
+                    </div>
+                    <div class="auth-form">
+                        <form id="register-form">
+                            <div class="form-group">
+                                <label for="register-name" data-i18n="register-name">Nome</label>
+                                <input type="text" id="register-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-surname" data-i18n="register-surname">Cognome</label>
+                                <input type="text" id="register-surname" name="surname" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-phone" data-i18n="register-phone">Numero di Telefono (facoltativo)</label>
+                                <input type="tel" id="register-phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="register-email" data-i18n="register-email">Email</label>
+                                <input type="email" id="register-email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password" data-i18n="register-password">Password</label>
+                                <input type="password" id="register-password" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-confirm-password" data-i18n="register-confirm-password">Conferma Password</label>
+                                <input type="password" id="register-confirm-password" name="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn primary" data-i18n="register-submit">Registrati</button>
+                        </form>
+                        <p class="auth-switch">
+                            <span data-i18n="register-has-account">Hai già un account?</span> 
+                            <a href="login.html" data-i18n="register-login-link">Accedi</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Faw's Website</h3>
+                    <p data-i18n="footer-tagline">Programmazione, creatività e passione</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer-navigation">Navigazione</h4>
+                    <ul>
+                        <li><a href="index.html" data-i18n="nav-home">Home</a></li>
+                        <li><a href="index.html#about" data-i18n="nav-about">Chi Sono</a></li>
+                        <li><a href="contact.html" data-i18n="nav-contact">Contattami</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4 data-i18n="footer-social">Social</h4>
+                    <div class="social-icons">
+                        <a href="mailto:faw.wkm@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                        <a href="https://discord.com/users/____faw" title="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="https://instagram.com/xfaw__" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Faw's Website. <span data-i18n="footer-rights">Tutti i diritti riservati.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

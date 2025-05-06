@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faw's Website</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Faw's Website</h1>
+            <div class="tagline">Programmatore & Creativo</div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home" class="active" data-i18n="nav-home">Home</a></li>
+                <li><a href="#about" data-i18n="nav-about">Chi Sono</a></li>
+                <li><a href="contact.html" data-i18n="nav-contact">Contattami</a></li>
+                <li><a href="login.html" data-i18n="nav-login">Login</a></li>
+                <li><a href="register.html" data-i18n="nav-register">Registrati</a></li>
+                <li class="language-switch">
+                    <button id="it-btn" class="active">IT</button>
+                    <button id="en-btn">EN</button>
+                </li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="section">
+            <div class="container">
+                <div class="hero">
+                    <h2 data-i18n="home-title">Benvenuto nel mio mondo digitale!</h2>
+                    <p data-i18n="home-subtitle">Programmatore appassionato, creativo e sempre in cerca di nuove sfide</p>
+                    <div class="cta-buttons">
+                        <a href="#about" class="btn primary" data-i18n="home-about-btn">Scopri chi sono</a>
+                        <a href="contact.html" class="btn secondary" data-i18n="home-contact-btn">Contattami</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="code-animation">
+                        <pre><code>
+function hello() {
+    console.log("Ciao, sono Faw!");
+    return "Benvenuto nel mio sito!";
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <h2 class="section-title" data-i18n="about-title">Chi Sono</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p data-i18n="about-description">
+                            Ciao! Sono Faw, un programmatore nato e residente in Italia. La mia passione per la tecnologia è iniziata quando ero molto piccolo e da allora non ho mai smesso di esplorare il mondo del coding.
+                            Attualmente sto imparando HTML, CSS e JavaScript per creare siti web come questo. Mi piace anche sperimentare con Python e sono interessato all'intelligenza artificiale.
+                            Nel tempo libero mi piace giocare al PC, guardare serie TV e film, giocare a basket e passare del tempo con i miei amici. Sono curioso, creativo e sempre pronto a imparare cose nuove!
+                        </p>
+                        <div class="skills">
+                            <h3 data-i18n="about-skills">Le mie competenze</h3>
+                            <div class="skill-bars">
+                                <div class="skill">
+                                    <span class="skill-name">HTML</span>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="skill">
+                                    <span class="skill-name">CSS</span>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                <div class="skill">
+                                    <span class="skill-name">JavaScript</span>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <div class="skill">
+                                    <span class="skill-name">Python</span>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 70%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-image">
+                        <div class="profile-card">
+                            <div class="profile-header">
+                                <i class="fas fa-code profile-icon"></i>
+                            </div>
+                            <div class="profile-info">
+                                <h3>Faw</h3>
+                                <p data-i18n="about-location">Milano, Italia</p>
+                                <div class="social-links">
+                                    <a href="mailto:faw.wkm@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                                    <a href="https://discord.com/users/____faw" title="Discord"><i class="fab fa-discord"></i></a>
+                                    <a href="https://instagram.com/xfaw__" title="Instagram"><i class="fab fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Faw's Website</h3>
+                    <p data-i18n="footer-tagline">Programmazione, creatività e passione</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer-navigation">Navigazione</h4>
+                    <ul>
+                        <li><a href="#home" data-i18n="nav-home">Home</a></li>
+                        <li><a href="#about" data-i18n="nav-about">Chi Sono</a></li>
+                        <li><a href="contact.html" data-i18n="nav-contact">Contattami</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4 data-i18n="footer-social">Social</h4>
+                    <div class="social-icons">
+                        <a href="mailto:faw.wkm@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                        <a href="https://discord.com/users/____faw" title="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="https://instagram.com/xfaw__" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-admin">
+                    <a href="contact.html#admin-section" id="admin-panel-link" data-i18n="footer-admin">Accesso Pannello Admin</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Faw's Website. <span data-i18n="footer-rights">Tutti i diritti riservati.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
