@@ -46,3 +46,7 @@ URL dell'API: `https://script.google.com/macros/s/AKfycbxGkie4vMRwIVD1-ObIQLci3y
 - Email: faw.wkm@gmail.com
 - Discord: ____faw
 - Instagram: xfaw__
+
+## Aggiornamenti Recenti
+
+- 07/05/2025 | Aggiornato il sito, modalità inglese semi-coperta, registrazione e login funzionanti.
