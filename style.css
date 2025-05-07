@@ -164,6 +164,21 @@ nav ul li a:hover, nav ul li a.active {
     background-color: rgba(30, 136, 229, 0.1);
 }
 
+/* Stile per il nome utente nella barra di navigazione */
+nav ul li.username {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: var(--primary-color);
+    color: var(--text-white);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+nav ul li.username span {
+    margin-left: 5px;
+}
+
 .language-switch {
     display: flex;
     margin-left: 20px;

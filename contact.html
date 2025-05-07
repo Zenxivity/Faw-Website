@@ -91,6 +91,58 @@
                             </form>
                             <div id="form-status"></div>
                         </div>
+                        
+                        <script>
+                            // Verifica se l'utente è loggato quando la pagina si carica
+                            document.addEventListener('DOMContentLoaded', function() {
+                                console.log('Pagina di contatto caricata, verifica stato login');
+                                
+                                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                                const currentUserStr = localStorage.getItem('currentUser');
+                                
+                                console.log('Stato login:', isLoggedIn, currentUserStr ? 'presente' : 'assente');
+                                
+                                const loginRequiredMessage = document.getElementById('login-required-message');
+                                const contactFormLoggedIn = document.getElementById('contact-form-logged-in');
+                                
+                                if (isLoggedIn && currentUserStr) {
+                                    try {
+                                        // Utente loggato, mostra il form
+                                        const currentUser = JSON.parse(currentUserStr);
+                                        console.log('Utente loggato:', currentUser.name);
+                                        
+                                        loginRequiredMessage.style.display = 'none';
+                                        contactFormLoggedIn.style.display = 'block';
+                                        
+                                        // Pre-compila il form con i dati dell'utente
+                                        const nameInput = document.getElementById('name');
+                                        const emailInput = document.getElementById('email');
+                                        
+                                        if (nameInput && currentUser.name) {
+                                            nameInput.value = currentUser.name;
+                                        }
+                                        
+                                        if (emailInput && currentUser.email) {
+                                            emailInput.value = currentUser.email;
+                                        }
+                                    } catch (error) {
+                                        console.error('Errore nel parsing dell\'utente:', error);
+                                        // In caso di errore, mostra il messaggio di login richiesto
+                                        loginRequiredMessage.style.display = 'block';
+                                        contactFormLoggedIn.style.display = 'none';
+                                        
+                                        // Resetta lo stato di login
+                                        localStorage.removeItem('isLoggedIn');
+                                        localStorage.removeItem('currentUser');
+                                    }
+                                } else {
+                                    // Utente non loggato, mostra il messaggio
+                                    console.log('Utente non loggato');
+                                    loginRequiredMessage.style.display = 'block';
+                                    contactFormLoggedIn.style.display = 'none';
+                                }
+                            });
+                        </script>
                     </div>
                 </div>
             </div>

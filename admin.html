@@ -116,50 +116,166 @@
 
     <script src="script.js"></script>
     <script>
-        // Funzione per caricare i dati admin
+        // Funzione per caricare i dati admin dal Google Sheets
         async function loadAdminPanelData() {
             try {
-                // Load users
-                const usersResponse = await fetch(`${API_URL}?action=getUsers`);
-                const usersData = await usersResponse.json();
+                const API_URL = 'https://script.google.com/macros/s/AKfycbxGkie4vMRwIVD1-ObIQLci3ymT4jS36Fe6DvNcqARQoWjMU-MhYcPuorZbgM5tbWffxw/exec';
                 
-                if (usersData.success && usersData.users) {
-                    const usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+                // Carica gli utenti dal localStorage come backup
+                const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // Carica gli utenti
+                const usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+                usersTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">Caricamento utenti...</td></tr>';
+                
+                try {
+                    // Carica gli utenti dall'API
+                    const usersParams = {
+                        operation: 'read',
+                        sheet: 'Utenti'
+                    };
+                    
+                    // Costruisci l'URL con i parametri
+                    const usersUrl = new URL(API_URL);
+                    Object.keys(usersParams).forEach(key => usersUrl.searchParams.append(key, usersParams[key]));
+                    
+                    const usersResponse = await fetch(usersUrl);
+                    const usersData = await usersResponse.json();
+                    
+                    // Mostra gli utenti
                     usersTable.innerHTML = '';
                     
-                    usersData.users.forEach(user => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${user.name || ''}</td>
-                            <td>${user.surname || ''}</td>
-                            <td>${user.email || ''}</td>
-                            <td>${user.phone || ''}</td>
-                            <td>${new Date(user.date).toLocaleString() || ''}</td>
-                        `;
-                        usersTable.appendChild(row);
-                    });
+                    if (usersData.status === 'success' && usersData.data && usersData.data.length > 0) {
+                        usersData.data.forEach(user => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${user.Nome || ''}</td>
+                                <td>${user.Cognome || ''}</td>
+                                <td>${user.Email || ''}</td>
+                                <td>${user.Telefono || ''}</td>
+                                <td>${new Date(user.Timestamp || new Date()).toLocaleString()}</td>
+                            `;
+                            usersTable.appendChild(row);
+                        });
+                    } else {
+                        // Se non ci sono utenti nell'API, mostra quelli dal localStorage
+                        if (localUsers.length > 0) {
+                            localUsers.forEach(user => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${user.name || ''}</td>
+                                    <td>${user.surname || ''}</td>
+                                    <td>${user.email || ''}</td>
+                                    <td>${user.phone || ''}</td>
+                                    <td>${new Date(user.date || new Date()).toLocaleString()}</td>
+                                `;
+                                usersTable.appendChild(row);
+                            });
+                        } else {
+                            usersTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nessun utente registrato</td></tr>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading users from API:', error);
+                    
+                    // In caso di errore, mostra gli utenti dal localStorage
+                    usersTable.innerHTML = '';
+                    
+                    if (localUsers.length > 0) {
+                        localUsers.forEach(user => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${user.name || ''}</td>
+                                <td>${user.surname || ''}</td>
+                                <td>${user.email || ''}</td>
+                                <td>${user.phone || ''}</td>
+                                <td>${new Date(user.date || new Date()).toLocaleString()}</td>
+                            `;
+                            usersTable.appendChild(row);
+                        });
+                    } else {
+                        usersTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nessun utente registrato</td></tr>';
+                    }
                 }
                 
-                // Load messages
-                const messagesResponse = await fetch(`${API_URL}?action=getMessages`);
-                const messagesData = await messagesResponse.json();
+                // Carica i messaggi dal localStorage come backup
+                const localMessages = JSON.parse(localStorage.getItem('messages') || '[]');
                 
-                if (messagesData.success && messagesData.messages) {
-                    const messagesTable = document.getElementById('messages-table').getElementsByTagName('tbody')[0];
+                // Carica i messaggi
+                const messagesTable = document.getElementById('messages-table').getElementsByTagName('tbody')[0];
+                messagesTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">Caricamento messaggi...</td></tr>';
+                
+                try {
+                    // Carica i messaggi dall'API
+                    const messagesParams = {
+                        operation: 'read',
+                        sheet: 'Messaggi'
+                    };
+                    
+                    // Costruisci l'URL con i parametri
+                    const messagesUrl = new URL(API_URL);
+                    Object.keys(messagesParams).forEach(key => messagesUrl.searchParams.append(key, messagesParams[key]));
+                    
+                    const messagesResponse = await fetch(messagesUrl);
+                    const messagesData = await messagesResponse.json();
+                    
+                    // Mostra i messaggi
                     messagesTable.innerHTML = '';
                     
-                    messagesData.messages.forEach(message => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${message.name || ''}</td>
-                            <td>${message.email || ''}</td>
-                            <td>${message.subject || ''}</td>
-                            <td>${message.message || ''}</td>
-                            <td>${new Date(message.date).toLocaleString() || ''}</td>
-                        `;
-                        messagesTable.appendChild(row);
-                    });
+                    if (messagesData.status === 'success' && messagesData.data && messagesData.data.length > 0) {
+                        messagesData.data.forEach(message => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${message.Nome || ''}</td>
+                                <td>${message.Email || ''}</td>
+                                <td>${message.Oggetto || ''}</td>
+                                <td>${message.Messaggio || ''}</td>
+                                <td>${new Date(message.Timestamp || new Date()).toLocaleString()}</td>
+                            `;
+                            messagesTable.appendChild(row);
+                        });
+                    } else {
+                        // Se non ci sono messaggi nell'API, mostra quelli dal localStorage
+                        if (localMessages.length > 0) {
+                            localMessages.forEach(message => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${message.name || ''}</td>
+                                    <td>${message.email || ''}</td>
+                                    <td>${message.subject || ''}</td>
+                                    <td>${message.message || ''}</td>
+                                    <td>${new Date(message.date || new Date()).toLocaleString()}</td>
+                                `;
+                                messagesTable.appendChild(row);
+                            });
+                        } else {
+                            messagesTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nessun messaggio ricevuto</td></tr>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading messages from API:', error);
+                    
+                    // In caso di errore, mostra i messaggi dal localStorage
+                    messagesTable.innerHTML = '';
+                    
+                    if (localMessages.length > 0) {
+                        localMessages.forEach(message => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${message.name || ''}</td>
+                                <td>${message.email || ''}</td>
+                                <td>${message.subject || ''}</td>
+                                <td>${message.message || ''}</td>
+                                <td>${new Date(message.date || new Date()).toLocaleString()}</td>
+                            `;
+                            messagesTable.appendChild(row);
+                        });
+                    } else {
+                        messagesTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nessun messaggio ricevuto</td></tr>';
+                    }
                 }
+                
+                console.log('Dati admin caricati con successo');
             } catch (error) {
                 console.error('Error loading admin data:', error);
                 alert('Errore nel caricamento dei dati. Riprova più tardi.');

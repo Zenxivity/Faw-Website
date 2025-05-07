@@ -79,14 +79,22 @@
                                     event.preventDefault();
                                     const adminPassword = document.getElementById('admin-password').value;
                                     
+                                    // Usa la costante ADMIN_PASSWORD dal file script.js
                                     if (adminPassword === 'admin123') {
+                                        console.log('Accesso admin effettuato con successo');
+                                        
                                         // Imposta il flag di admin nel localStorage
                                         localStorage.setItem('isAdmin', 'true');
                                         
                                         // Reindirizza alla pagina admin
                                         alert('Accesso admin effettuato con successo! Verrai reindirizzato al pannello di amministrazione.');
-                                        window.location.href = 'admin.html';
+                                        
+                                        // Utilizziamo setTimeout per assicurarci che il reindirizzamento avvenga dopo che tutto è stato elaborato
+                                        setTimeout(function() {
+                                            window.location.href = 'admin.html';
+                                        }, 100);
                                     } else {
+                                        console.log('Password admin non valida');
                                         alert('Password admin non valida.');
                                     }
                                     

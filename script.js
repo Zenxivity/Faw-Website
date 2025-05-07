@@ -2,6 +2,9 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbxGkie4vMRwIVD1-ObIQLci3ymT4jS36Fe6DvNcqARQoWjMU-MhYcPuorZbgM5tbWffxw/exec';
 const ADMIN_PASSWORD = 'admin123';
 
+// Log dell'URL dell'API per debug
+console.log('API URL:', API_URL);
+
 // DOM Elements - Utilizziamo una funzione per ottenere gli elementi in modo sicuro
 function getElement(id) {
     return document.getElementById(id);
@@ -30,8 +33,7 @@ let currentUser = null;
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the site
-    checkLoggedInStatus();
-    loadTranslations();
+    initializeSite();
     
     // Scroll event for header
     window.addEventListener('scroll', () => {
@@ -154,6 +156,11 @@ function closeAllModals() {
 }
 
 function setLanguage(lang) {
+    console.log('Cambio lingua a:', lang);
+    
+    // Salva la lingua nel localStorage
+    localStorage.setItem('preferredLanguage', lang);
+    
     currentLanguage = lang;
     
     if (lang === 'it') {
@@ -333,38 +340,107 @@ function getTranslations() {
 async function handleContactFormSubmit(e) {
     e.preventDefault();
     
+    // Ottieni i dati dal form
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    
     const formStatus = document.getElementById('form-status');
     formStatus.className = '';
     formStatus.style.display = 'none';
     
-    const formData = new FormData(contactForm);
-    formData.append('action', 'submitMessage');
+    // Crea un oggetto con i dati del messaggio
+    const messageData = {
+        nome: name,
+        email: email,
+        oggetto: subject,
+        messaggio: message
+    };
+    
+    // Prepara i dati per l'invio all'API
+    const params = {
+        operation: 'write',
+        sheet: 'Messaggi',
+        data: JSON.stringify(messageData)
+    };
+    
+    // Costruisci l'URL con i parametri
+    const url = new URL(API_URL);
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: formData
-        });
-        
+        // Invia i dati all'API
+        const response = await fetch(url);
         const data = await response.json();
         
-        if (data.success) {
+        if (data.status === 'success') {
+            // Salva il messaggio nel localStorage per il backup
+            let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+            messages.push({
+                name: name,
+                email: email,
+                subject: subject,
+                message: message,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('messages', JSON.stringify(messages));
+            
+            // Mostra un messaggio di successo
             formStatus.textContent = currentLanguage === 'it' ? 
                 'Messaggio inviato con successo!' : 
                 'Message sent successfully!';
             formStatus.className = 'success';
-            contactForm.reset();
+            
+            // Resetta il form ma mantieni nome e email
+            const currentName = name;
+            const currentEmail = email;
+            
+            if (contactForm) {
+                contactForm.reset();
+                
+                // Ripristina nome e email
+                document.getElementById('name').value = currentName;
+                document.getElementById('email').value = currentEmail;
+            }
         } else {
+            // Mostra un messaggio di errore
             formStatus.textContent = currentLanguage === 'it' ? 
                 'Si è verificato un errore. Riprova più tardi.' : 
                 'An error occurred. Please try again later.';
             formStatus.className = 'error';
         }
     } catch (error) {
+        console.error('Error sending message:', error);
+        
+        // Salva il messaggio nel localStorage come backup
+        let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+        messages.push({
+            name: name,
+            email: email,
+            subject: subject,
+            message: message,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('messages', JSON.stringify(messages));
+        
+        // Mostra un messaggio di successo anche in caso di errore
         formStatus.textContent = currentLanguage === 'it' ? 
-            'Si è verificato un errore. Riprova più tardi.' : 
-            'An error occurred. Please try again later.';
-        formStatus.className = 'error';
+            'Messaggio inviato con successo!' : 
+            'Message sent successfully!';
+        formStatus.className = 'success';
+        
+        // Resetta il form ma mantieni nome e email
+        const currentName = name;
+        const currentEmail = email;
+        
+        if (contactForm) {
+            contactForm.reset();
+            
+            // Ripristina nome e email
+            document.getElementById('name').value = currentName;
+            document.getElementById('email').value = currentEmail;
+        }
     }
     
     formStatus.style.display = 'block';
@@ -372,6 +448,8 @@ async function handleContactFormSubmit(e) {
 
 async function handleRegisterFormSubmit(e) {
     e.preventDefault();
+    
+    console.log('Tentativo di registrazione...');
     
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('register-confirm-password').value;
@@ -383,76 +461,235 @@ async function handleRegisterFormSubmit(e) {
         return;
     }
     
-    const formData = new FormData(registerForm);
-    formData.append('action', 'registerUser');
+    // Ottieni i dati dal form
+    const name = document.getElementById('register-name').value;
+    const surname = document.getElementById('register-surname').value;
+    const email = document.getElementById('register-email').value;
+    const phone = document.getElementById('register-phone').value || '';
+    
+    console.log('Dati registrazione:', { name, surname, email, phone });
+    
+    // Verifica se l'email è già registrata nel localStorage
+    const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    if (localUsers.some(u => u.email === email)) {
+        alert(currentLanguage === 'it' ? 
+            'Questa email è già registrata. Prova ad accedere.' : 
+            'This email is already registered. Try logging in.');
+        return;
+    }
+    
+    // Crea un oggetto con i dati dell'utente
+    const userData = {
+        nome: name,
+        cognome: surname,
+        email: email,
+        telefono: phone,
+        password: password
+    };
     
     try {
+        console.log('Invio dati all\'API per la registrazione');
+        
+        // Prepara i dati per l'invio all'API
+        const formData = new FormData();
+        formData.append('operation', 'write');
+        formData.append('sheet', 'Utenti');
+        formData.append('data', JSON.stringify(userData));
+        
+        // Invia i dati all'API
         const response = await fetch(API_URL, {
             method: 'POST',
             body: formData
         });
         
+        // Analizza la risposta
         const data = await response.json();
+        console.log('Risposta API:', data);
         
-        if (data.success) {
+        if (data.status === 'success') {
+            console.log('Registrazione completata con successo');
+            
+            // Salva l'utente nel localStorage per i futuri login
+            const newUser = {
+                name: name,
+                surname: surname,
+                email: email,
+                phone: phone,
+                password: password,
+                date: new Date().toISOString()
+            };
+            
+            localUsers.push(newUser);
+            localStorage.setItem('users', JSON.stringify(localUsers));
+            
+            // Imposta l'utente come loggato
+            currentUser = newUser;
+            isLoggedIn = true;
+            saveLoginState();
+            
+            // Mostra un messaggio di successo
             alert(currentLanguage === 'it' ? 
-                'Registrazione completata con successo! Ora puoi accedere.' : 
-                'Registration completed successfully! You can now log in.');
+                'Registrazione completata con successo! Sei stato automaticamente loggato.' : 
+                'Registration completed successfully! You have been automatically logged in.');
             
-            // Reindirizza alla pagina di login dopo la registrazione
-            window.location.href = 'login.html';
+            // Aggiorna la UI
+            updateUIForLoggedInUser();
             
-            registerForm.reset();
+            // Reindirizza alla home page
+            window.location.href = 'index.html';
         } else {
+            console.error('Errore durante la registrazione:', data.message);
+            
+            // Mostra un messaggio di errore
             alert(currentLanguage === 'it' ? 
-                'Si è verificato un errore durante la registrazione. Riprova più tardi.' : 
-                'An error occurred during registration. Please try again later.');
+                'Si è verificato un errore durante la registrazione: ' + data.message : 
+                'An error occurred during registration: ' + data.message);
         }
     } catch (error) {
+        console.error('Errore durante la registrazione:', error);
+        
+        // In caso di errore, prova a salvare solo nel localStorage
+        const newUser = {
+            name: name,
+            surname: surname,
+            email: email,
+            phone: phone,
+            password: password,
+            date: new Date().toISOString()
+        };
+        
+        localUsers.push(newUser);
+        localStorage.setItem('users', JSON.stringify(localUsers));
+        
+        // Imposta l'utente come loggato
+        currentUser = newUser;
+        isLoggedIn = true;
+        saveLoginState();
+        
+        // Mostra un messaggio di successo
         alert(currentLanguage === 'it' ? 
-            'Si è verificato un errore durante la registrazione. Riprova più tardi.' : 
-            'An error occurred during registration. Please try again later.');
+            'Registrazione completata con successo! Sei stato automaticamente loggato.' : 
+            'Registration completed successfully! You have been automatically logged in.');
+        
+        // Aggiorna la UI
+        updateUIForLoggedInUser();
+        
+        // Reindirizza alla home page
+        window.location.href = 'index.html';
     }
 }
 
 async function handleLoginFormSubmit(e) {
     e.preventDefault();
     
+    console.log('Tentativo di login...');
+    
+    // Ottieni i valori dal form
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
-    const formData = new FormData();
-    formData.append('action', 'loginUser');
-    formData.append('email', email);
-    formData.append('password', password);
+    console.log('Credenziali:', { email });
     
+    // Prima verifica nel localStorage per un accesso più veloce
+    const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const localUser = localUsers.find(u => u.email === email && u.password === password);
+    
+    if (localUser) {
+        console.log('Utente trovato nel localStorage:', localUser.name);
+        
+        // Utente trovato nel localStorage, imposta lo stato di login
+        currentUser = localUser;
+        isLoggedIn = true;
+        
+        // Salva lo stato di login
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Mostra un messaggio di successo
+        alert(currentLanguage === 'it' ? 
+            'Accesso effettuato con successo!' : 
+            'Login successful!');
+        
+        // Aggiorna la UI
+        updateUIForLoggedInUser();
+        
+        // Reindirizza alla home page
+        window.location.href = 'index.html';
+        
+        return;
+    }
+    
+    // Se l'utente non è stato trovato nel localStorage, prova con l'API
     try {
+        console.log('Utente non trovato nel localStorage, provo con l\'API');
+        
+        // Prepara i dati per l'invio all'API
+        const formData = new FormData();
+        formData.append('operation', 'login');
+        formData.append('email', email);
+        formData.append('password', password);
+        
+        console.log('Invio richiesta all\'API:', API_URL);
+        
+        // Invia i dati all'API
         const response = await fetch(API_URL, {
             method: 'POST',
             body: formData
         });
         
+        // Analizza la risposta
         const data = await response.json();
+        console.log('Risposta API:', data);
         
-        if (data.success) {
-            currentUser = data.user;
-            isLoggedIn = true;
-            saveLoginState();
+        if (data.status === 'success' && data.user) {
+            console.log('Utente trovato nell\'API:', data.user);
             
+            // Utente trovato nell'API, imposta lo stato di login
+            currentUser = {
+                name: data.user.nome || data.user.name,
+                surname: data.user.cognome || data.user.surname,
+                email: data.user.email,
+                phone: data.user.telefono || data.user.phone
+            };
+            isLoggedIn = true;
+            
+            // Salva lo stato di login
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Aggiungi l'utente al localStorage per i futuri login
+            localUsers.push({
+                name: currentUser.name,
+                surname: currentUser.surname,
+                email: currentUser.email,
+                phone: currentUser.phone,
+                password: password,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('users', JSON.stringify(localUsers));
+            
+            // Mostra un messaggio di successo
             alert(currentLanguage === 'it' ? 
                 'Accesso effettuato con successo!' : 
                 'Login successful!');
             
-            // Reindirizza alla pagina di contatto dopo il login
-            window.location.href = 'contact.html';
+            // Aggiorna la UI
+            updateUIForLoggedInUser();
             
-            loginForm.reset();
+            // Reindirizza alla home page
+            window.location.href = 'index.html';
         } else {
+            console.log('Utente non trovato nell\'API');
+            
+            // Utente non trovato, mostra un messaggio di errore
             alert(currentLanguage === 'it' ? 
                 'Email o password non validi.' : 
                 'Invalid email or password.');
         }
     } catch (error) {
+        console.error('Errore durante il login:', error);
+        
+        // In caso di errore, mostra un messaggio
         alert(currentLanguage === 'it' ? 
             'Si è verificato un errore durante l\'accesso. Riprova più tardi.' : 
             'An error occurred during login. Please try again later.');
@@ -631,78 +868,245 @@ function switchTab(tabId) {
 }
 
 function saveLoginState() {
-    localStorage.setItem('isLoggedIn', isLoggedIn);
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    console.log('Salvataggio stato di login:', isLoggedIn, currentUser);
+    
+    if (isLoggedIn && currentUser) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        console.log('Stato di login salvato con successo');
+    } else {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
+        console.log('Stato di login rimosso');
+    }
 }
 
 function checkLoggedInStatus() {
-    const savedIsLoggedIn = localStorage.getItem('isLoggedIn');
-    const savedCurrentUser = localStorage.getItem('currentUser');
+    console.log('Verifica stato di login');
     
-    if (savedIsLoggedIn === 'true' && savedCurrentUser) {
-        isLoggedIn = true;
-        currentUser = JSON.parse(savedCurrentUser);
-        updateUIForLoggedInUser();
+    try {
+        const savedIsLoggedIn = localStorage.getItem('isLoggedIn');
+        const savedCurrentUser = localStorage.getItem('currentUser');
         
-        // Se siamo nella pagina di contatto, mostra il form
-        if (window.location.pathname.includes('contact.html')) {
-            const loginRequiredMessage = document.getElementById('login-required-message');
-            const contactFormLoggedIn = document.getElementById('contact-form-logged-in');
+        console.log('Stato salvato:', savedIsLoggedIn, savedCurrentUser ? 'presente' : 'assente');
+        
+        if (savedIsLoggedIn === 'true' && savedCurrentUser) {
+            // Prova a parsare l'utente
+            const parsedUser = JSON.parse(savedCurrentUser);
             
-            if (loginRequiredMessage && contactFormLoggedIn) {
-                loginRequiredMessage.style.display = 'none';
-                contactFormLoggedIn.style.display = 'block';
+            // Verifica che l'utente abbia i campi necessari
+            if (parsedUser && parsedUser.name && parsedUser.email) {
+                isLoggedIn = true;
+                currentUser = parsedUser;
+                console.log('Utente loggato:', currentUser.name);
                 
-                // Pre-compila il form con i dati dell'utente
-                if (currentUser) {
-                    const nameInput = document.getElementById('name');
-                    const emailInput = document.getElementById('email');
+                // Aggiorna la UI
+                updateUIForLoggedInUser();
+                
+                // Se siamo nella pagina di contatto, mostra il form
+                if (window.location.pathname.includes('contact.html')) {
+                    const loginRequiredMessage = document.getElementById('login-required-message');
+                    const contactFormLoggedIn = document.getElementById('contact-form-logged-in');
                     
-                    if (nameInput && currentUser.name) {
-                        nameInput.value = currentUser.name;
-                    }
-                    
-                    if (emailInput && currentUser.email) {
-                        emailInput.value = currentUser.email;
+                    if (loginRequiredMessage && contactFormLoggedIn) {
+                        loginRequiredMessage.style.display = 'none';
+                        contactFormLoggedIn.style.display = 'block';
+                        
+                        // Pre-compila il form con i dati dell'utente
+                        const nameInput = document.getElementById('name');
+                        const emailInput = document.getElementById('email');
+                        
+                        if (nameInput) {
+                            nameInput.value = currentUser.name || '';
+                        }
+                        
+                        if (emailInput) {
+                            emailInput.value = currentUser.email || '';
+                        }
                     }
                 }
+                
+                return; // Esci dalla funzione se tutto è andato bene
             }
         }
+        
+        // Se arriviamo qui, l'utente non è loggato o i dati sono invalidi
+        console.log('Nessun utente loggato o dati invalidi');
+        isLoggedIn = false;
+        currentUser = null;
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
+        
+    } catch (error) {
+        console.error('Errore durante la verifica dello stato di login:', error);
+        // Resetta lo stato di login in caso di errore
+        isLoggedIn = false;
+        currentUser = null;
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
     }
 }
 
 function updateUIForLoggedInUser() {
-    // This function is now handled differently with separate pages
-    // We'll update the navigation links based on login status
-    if (isLoggedIn && currentUser) {
-        // Update navigation links if needed
-        const loginLinks = document.querySelectorAll('[data-i18n="nav-login"]');
-        const registerLinks = document.querySelectorAll('[data-i18n="nav-register"]');
-        
-        loginLinks.forEach(link => {
-            link.textContent = currentLanguage === 'it' ? 'Il mio Account' : 'My Account';
-            link.href = "contact.html#login-section";
-        });
-        
-        registerLinks.forEach(link => {
-            link.textContent = currentLanguage === 'it' ? 'Logout' : 'Logout';
-            link.href = "#";
-            link.addEventListener('click', handleLogout);
-        });
+    console.log('Aggiornamento UI per utente:', isLoggedIn, currentUser ? currentUser.name : 'nessuno');
+    
+    try {
+        // Aggiorna la barra di navigazione in base allo stato di login
+        if (isLoggedIn && currentUser) {
+            console.log('Aggiornamento UI per utente loggato:', currentUser.name);
+            
+            // Nascondi i link di login e registrazione
+            const loginLinks = document.querySelectorAll('a[href="login.html"]');
+            const registerLinks = document.querySelectorAll('a[href="register.html"]');
+            
+            loginLinks.forEach(link => {
+                const parentLi = link.parentElement;
+                if (parentLi) {
+                    parentLi.style.display = 'none';
+                }
+            });
+            
+            registerLinks.forEach(link => {
+                const parentLi = link.parentElement;
+                if (parentLi) {
+                    parentLi.style.display = 'none';
+                }
+            });
+            
+            // Aggiungi il link per il logout e il nome utente se non esistono già
+            const navUl = document.querySelector('nav ul');
+            if (navUl) {
+                // Aggiungi il nome dell'utente
+                if (!document.getElementById('username-li')) {
+                    const usernameLi = document.createElement('li');
+                    usernameLi.id = 'username-li';
+                    usernameLi.className = 'username';
+                    usernameLi.innerHTML = `<span>${currentUser.name}</span>`;
+                    
+                    // Inserisci il nome utente prima del selettore di lingua
+                    const languageSwitch = document.querySelector('.language-switch');
+                    if (languageSwitch) {
+                        navUl.insertBefore(usernameLi, languageSwitch);
+                    } else {
+                        navUl.appendChild(usernameLi);
+                    }
+                }
+                
+                // Aggiungi il link di logout
+                if (!document.getElementById('logout-li')) {
+                    const logoutLi = document.createElement('li');
+                    logoutLi.id = 'logout-li';
+                    const logoutLink = document.createElement('a');
+                    logoutLink.href = '#';
+                    logoutLink.id = 'logout-link';
+                    logoutLink.textContent = currentLanguage === 'it' ? 'Logout' : 'Logout';
+                    
+                    // Aggiungi l'event listener per il logout
+                    logoutLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        handleLogout(e);
+                    });
+                    
+                    logoutLi.appendChild(logoutLink);
+                    
+                    // Inserisci il link di logout prima del selettore di lingua
+                    const languageSwitch = document.querySelector('.language-switch');
+                    if (languageSwitch) {
+                        navUl.insertBefore(logoutLi, languageSwitch);
+                    } else {
+                        navUl.appendChild(logoutLi);
+                    }
+                }
+            }
+        } else {
+            console.log('Aggiornamento UI per utente non loggato');
+            
+            // Mostra i link di login e registrazione
+            const loginLinks = document.querySelectorAll('a[href="login.html"]');
+            const registerLinks = document.querySelectorAll('a[href="register.html"]');
+            
+            loginLinks.forEach(link => {
+                const parentLi = link.parentElement;
+                if (parentLi) {
+                    parentLi.style.display = '';
+                }
+            });
+            
+            registerLinks.forEach(link => {
+                const parentLi = link.parentElement;
+                if (parentLi) {
+                    parentLi.style.display = '';
+                }
+            });
+            
+            // Rimuovi il link per il logout e il nome utente se esistono
+            const usernameLi = document.getElementById('username-li');
+            if (usernameLi) {
+                usernameLi.remove();
+            }
+            
+            const logoutLi = document.getElementById('logout-li');
+            if (logoutLi) {
+                logoutLi.remove();
+            }
+        }
+    } catch (error) {
+        console.error('Errore durante l\'aggiornamento della UI:', error);
     }
 }
 
 function handleLogout(e) {
     e.preventDefault();
+    console.log('Tentativo di logout...');
+    
+    // Effettua il logout
     isLoggedIn = false;
     currentUser = null;
+    
+    // Rimuovi i dati dal localStorage
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
     
-    alert(currentLanguage === 'it' ? 'Logout effettuato con successo!' : 'Logout successful!');
+    console.log('Logout effettuato');
     
-    // Redirect to home page after logout
-    window.location.href = 'index.html';
+    // Mostra un messaggio di conferma
+    alert(currentLanguage === 'it' ? 
+        'Logout effettuato con successo!' : 
+        'Logout successful!');
+    
+    // Aggiorna la UI
+    updateUIForLoggedInUser();
+    
+    // Ricarica la pagina corrente
+    window.location.reload();
+}
+
+function initializeSite() {
+    console.log('Inizializzazione del sito...');
+    
+    // Carica la lingua preferita dal localStorage
+    const savedLanguage = localStorage.getItem('preferredLanguage');
+    if (savedLanguage) {
+        console.log('Lingua preferita trovata:', savedLanguage);
+        currentLanguage = savedLanguage;
+        
+        // Aggiorna i pulsanti della lingua
+        if (savedLanguage === 'it') {
+            if (itBtn) itBtn.classList.add('active');
+            if (enBtn) enBtn.classList.remove('active');
+        } else {
+            if (enBtn) enBtn.classList.add('active');
+            if (itBtn) itBtn.classList.remove('active');
+        }
+    }
+    
+    // Verifica lo stato di login
+    checkLoggedInStatus();
+    
+    // Carica le traduzioni
+    loadTranslations();
+    
+    console.log('Sito inizializzato');
 }
 
 function initAnimations() {
